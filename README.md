@@ -1,6 +1,6 @@
 # 『30日でできる！OS自作入門』 for macOS Catalina
 
-[『30日でできる！OS自作入門』](https://book.mynavi.jp/ec/products/detail/id=22078)をmacOS 10.15 Catalinaで実行してみました。
+[『30日でできる！OS自作入門』](https://book.mynavi.jp/ec/products/detail/id=22078)を macOS 10.15 Catalinaで実行してみました。
 
 
 
@@ -9,10 +9,10 @@
 
 
 ### 1. バイナリエディタ [HEX FRIEND](https://ridiculousfish.com/hexfiend/)
- [AppStore版](https://apps.apple.com/us/app/hex-fiend/id1342896380?mt=12) もある。好みのものでいいが、[0xED](http://www.suavetech.com/0xed/0xed.html) は不安定だった。
+ [AppStore版](https://apps.apple.com/us/app/hex-fiend/id1342896380?mt=12) もある。
+ 好みのものでいいが、[0xED](http://www.suavetech.com/0xed/0xed.html) は不安定だった。
 
  「Chapter 1-1：とにかくやるのだぁ(helloos0)」では、
-
 バイナリエディタ Bz の代わりに使う。
 
 
@@ -59,8 +59,7 @@ macOS用の QEMUを使う。
 # バージョンを確認 (バージョン 4.1.1 以上でないと表示に不具合)
 % qemu-system-i386 -version
 
-# イメージファイルhelloos.imgを QEMUで実行
-# （なるべく警告の出ないコマンドラインオプション）
+# イメージファイルhelloos.imgを QEMUで実行（なるべく警告の出ないコマンドラインオプション）
 % qemu-system-i386 -drive file=helloos.img,format=raw,if=floppy -boot a
 
 # マウスが消えてしまった時は、control + option + g でマウスをリリース
@@ -81,11 +80,11 @@ TeraPadの代わりに、macOS用の好みのテキストエディタを使う�
 # Homebrewでインストール
 % brew install mtools
 
-# バージョンを確認 (現時点でバージョンは 4.0.2)
+# バージョンを確認 (現時点でバージョンは 4.0.23)
 % mtools --version
 
 #ディスクイメージ helloos.imgを作る
-mformat -f 1440 -C -B ipl.bin -i helloos.img ::
+% mformat -f 1440 -C -B ipl.bin -i helloos.img ::
 ```
 
 さらに、「Chapter 3-5：OS本体を書き始めてみる（harib00e）」では、  
@@ -118,7 +117,7 @@ mformat -f 1440 -C -B ipl.bin -i helloos.img ::
 
 [「『30日でできる！OS自作入門』のメモ」](https://vanya.jp.net/os/haribote.html#hrb)
 
-のページの「OS用リンカスクリプト」を使わせて頂いて、hrb.ld として作成して、これを用いてコンパイルする。
+のページの「OS用リンカスクリプト」を使わせて頂いた。hrb.ld として作成して、これを用いてコンパイルする。
 
 ```zsh
 # bootpack.cを、リンクスクリプト hrb.ldを利用してコンパイルし、bootpack.hrbを作る
@@ -133,7 +132,7 @@ mformat -f 1440 -C -B ipl.bin -i helloos.img ::
 
 [「GDT（グローバルディスクリプタテーブル） - OS自作入門 5日目-1 【Linux】 - サラリーマンがハッカーを真剣に目指す」]( http://bttb.s1.valueserver.jp/wordpress/blog/2017/12/13/makeos-5-1/)
 
-のページの「フォントファイルのリンクについて」を使わせて頂いて、convHankakuTxt.c として作成し、これを用いてhankaku.txtを変換する。
+のページの「フォントファイルのリンクについて」を使わせて頂いた。convHankakuTxt.c として作成し、これを用いてhankaku.txtを変換する。
 
 ```zsh
 # convHankakuTxt.c は標準ライブラリが必要なので、macOS標準のgccを使う
@@ -152,11 +151,13 @@ mformat -f 1440 -C -B ipl.bin -i helloos.img ::
 
 [「sprintfを実装する - OS自作入門 5日目-2 【Linux】 - サラリーマンがハッカーを真剣に目指す」](http://bttb.s1.valueserver.jp/wordpress/blog/2017/12/17/makeos-5-2/)
 
-のページの sprintf関数を使わせて頂いて、mysprintf.c として作成する。
+のページの sprintf関数を使わせて頂いた。mysprintf.c として作成する。
 
-警告が出たので mysprintf.cを少し修正；
+警告が出たので
 
-second parameter of 'va_start' not last named argument
+`second parameter of 'va_start' not last named argument`
+
+mysprintf.cを少し修正；
 
 ```mysprintf.c
 //va_start (list, 2);
@@ -180,7 +181,7 @@ Makefileも mysprintf.c に合わせる。
 
 > このsprintfは”%d”と”%x”にしか対応させていません。
 
-とのことなので、"%02X" は "%x"に、"%3d" は "%d" に書き換える必要がある 
+とのことなので、"%02X" は "%x"に、"%3d" は "%d" に書き換える必要がある。 
 
 
 ## B. 実行方法
@@ -203,6 +204,7 @@ Makefileも mysprintf.c に合わせる。
 ```
 
 実行して、以下のようなウィンドウが表示されれば、成功！
+<img width="720" alt="day1-2" src="https://user-images.githubusercontent.com/1836817/70053144-27bdd580-1618-11ea-9cbc-f466aba2c5f6.png">
 
 ### 3. 実行コマンド
 
@@ -215,6 +217,7 @@ Makefileも mysprintf.c に合わせる。
 
 # コンパイルでできたファイルで、haribote.img以外を削除
 % make clean
+
 # ソースファイル以外（haribote.imgも含め）をすべて削除
 % make src_only
 
@@ -223,14 +226,14 @@ Makefileも mysprintf.c に合わせる。
 ```
 
 #### ※ 註)
-フロッピーディスクに書き込むコマンド `make install` はありません。
+フロッピーディスクに書き込むコマンド `make install` は省略。
 
 
 
 ## C. 書籍のソースコード
 [マイナビ出版のサポートサイト](https://book.mynavi.jp/supportsite/detail/4839919844.html) より、[HariboteOS.zip](https://book.mynavi.jp/files/user/support/4839919844/HariboteOS.zip) がダウンロードできる。
 
-##### ※ Windows用のエンコーディング/改行コード（ShiftJIS/CRLF）なので、macOS/Linux用のUTF8/LFに変換した方が良い。エディタで変換するか、変換ツールがとしては nkf がある。
+#### ※註） Windows用のエンコーディング/改行コード（ShiftJIS/CRLF）なので、macOS/Linux用のUTF8/LFに変換した方が良い。エディタで変換するか、変換ツールがとしては nkf がある。
 
  ```zsh
 # Homebrewでインストール
@@ -276,7 +279,15 @@ https://github.com/yishibashi/hariboteOS)
 + [macOSでi386-elf向けのGCCをインストールする - tatsumack - Qiita](https://qiita.com/tatsumack/items/900f22ab466de87071dc)
 + [8日目（マウスを動かすまで） - ねこめもmkII（マークツー）](https://nekomemo2.hateblo.jp/entry/2019/10/09/094730)
 
-#### 註）
-macOSとはいえ、ほとんどLinux環境なので、検索キーワードには `Linux` を入れるとヒットすることがあります。
+#### ※註）
+macOSとはいえ、ほとんどLinux環境なので、検索キーワードには `Linux` を入れるとヒットすることがある。
 
-ただし、macOS の gccは、実態は clangなので、そこで苦労したりします。
+ただし、macOS の gccは、実態は clangなので、そこで苦労したりするが…
+
+
+### 謝意
+・ リンカスクリプトの作者 ivan ivanov（ivan111）さん
+
+・ フォントファイルのリンクについて、sprintf の作者 サラリーマンがハッカーを真剣に目指す さん
+
+に感謝します。
