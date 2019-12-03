@@ -1,6 +1,7 @@
 # 『30日でできる！OS自作入門』 for macOS Catalina
 
 [『30日でできる！OS自作入門』](https://book.mynavi.jp/ec/products/detail/id=22078)を macOS 10.15 Catalinaで実行する時のメモ。
+
 →・[Qiita記事](https://qiita.com/noanoa07/items/8828c37c2e286522c7ee)
 
 　
