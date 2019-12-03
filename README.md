@@ -1,11 +1,9 @@
 # 『30日でできる！OS自作入門』 for macOS Catalina
 
 [『30日でできる！OS自作入門』](https://book.mynavi.jp/ec/products/detail/id=22078)を macOS 10.15 Catalinaで実行する時のメモ。
+→・[Qiita記事](https://qiita.com/noanoa07/items/8828c37c2e286522c7ee)
 
-
-→・Qiita記事：
-[『30日でできる！OS自作入門』を macOS Catalina で実行する - noanoa07 - Qiita](https://qiita.com/noanoa07/items/8828c37c2e286522c7ee)
-
+　
 ## A. 環境構築
 ### 1. バイナリエディタ [HEX FRIEND](https://ridiculousfish.com/hexfiend/)
  [AppStore版](https://apps.apple.com/us/app/hex-fiend/id1342896380?mt=12) など、好みのものを。
