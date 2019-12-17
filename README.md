@@ -189,8 +189,8 @@ Makefileも修正。
 
 
 ### 謝意
-・ 「リンカスクリプト」の作者の ivan ivanov（ivan111）さん
+・ [「リンカスクリプト」](https://vanya.jp.net/os/haribote.html#hrb)の作者 ivan ivanov（ivan111）さん
 
-・ 「フォントファイルのリンクについて」、「sprintf」の作者の サラリーマンがハッカーを真剣に目指す さん
+・ [「フォントファイルのリンクについて」](http://bttb.s1.valueserver.jp/wordpress/blog/2017/12/13/makeos-5-1/)及び[「sprintf」](http://bttb.s1.valueserver.jp/wordpress/blog/2017/12/17/makeos-5-2/)の作者 サラリーマンがハッカーを真剣に目指す さん
 
 に感謝します。
