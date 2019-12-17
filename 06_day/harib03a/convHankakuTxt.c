@@ -1,3 +1,6 @@
+// convHankakuTxt.c
+// http://bttb.s1.valueserver.jp/wordpress/blog/2017/12/13/makeos-5-1/
+
 #include <stdio.h>
 #include <string.h>
 
