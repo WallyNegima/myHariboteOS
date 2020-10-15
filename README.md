@@ -70,11 +70,12 @@
 ```
 
 
-### 6. Cコンパイラ [i386-elf-gcc](https://formulae.brew.sh/formula/i386-elf-gcc)
+### 6. Cコンパイラ [i386-elf-gcc](https://github.com/nativeos/homebrew-i386-elf-toolchain)
 
 ```zsh
-# Homebrewでインストール
-% brew install i386-elf-gcc
+# Homebrew公式でなく、i386-elf-toolchain tapからインストール
+% brew tap nativeos/i386-elf-toolchain
+% brew install i386-elf-binutils i386-elf-gcc
 ```
 
 
