@@ -4,7 +4,7 @@
 
 →・[Qiita記事](https://qiita.com/noanoa07/items/8828c37c2e286522c7ee)
 
-
+　
 ## A. 環境構築
 ### 1. バイナリエディタ [HEX FRIEND](https://ridiculousfish.com/hexfiend/)
  [AppStore版](https://apps.apple.com/us/app/hex-fiend/id1342896380?mt=12) など、好みのものを。
@@ -70,12 +70,11 @@
 ```
 
 
-### 6. Cコンパイラ [i386-elf-gcc](https://github.com/nativeos/homebrew-i386-elf-toolchain)
+### 6. Cコンパイラ [i386-elf-gcc](https://formulae.brew.sh/formula/i386-elf-gcc)
 
 ```zsh
-# Homebrew公式でなく、i386-elf-toolchain tapからインストール
-% brew tap nativeos/i386-elf-toolchain
-% brew install i386-elf-binutils i386-elf-gcc
+# Homebrewでインストール
+% brew install i386-elf-gcc
 ```
 
 
@@ -114,7 +113,7 @@
 
 ```mysprintf.c
 //va_start (list, 2);
-va_start (list, fmt);
+va_start (list, fmt); 
 ```
 
 bootpack.cを修正。
@@ -130,7 +129,7 @@ Makefileも修正。
 % i386-elf-gcc -march=i486 -m32 -nostdlib -fno-builtin -T hrb.ld -g bootpack.c hankaku.c naskfunc.o mysprintf.c -o bootpack.hrb
 ```
 
-ソースコードの、"%02X" は "%x" に、"%3d" は "%d" に書き換える。
+ソースコードの、"%02X" は "%x" に、"%3d" は "%d" に書き換える。 
 
 
 ## B. 実行方法
