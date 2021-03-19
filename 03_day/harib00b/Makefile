@@ -11,7 +11,7 @@ default :
 # ファイル生成規則
 
 ipl.bin : ipl.nas Makefile
-	$(NASM) ipl.nas -o ipl.bin -l ipl.lst
+	$(NASM) ipl_true.nas -o ipl.bin -l ipl.lst
 
 haribote.img : ipl.bin Makefile
 	mformat -f 1440 -C -B ipl.bin -i haribote.img ::

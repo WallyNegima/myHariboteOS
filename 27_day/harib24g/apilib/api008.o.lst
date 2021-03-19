@@ -1,0 +1,16 @@
+     1                                  GLOBAL  api_initmalloc
+     2                                  
+     3                                  [SECTION .text]
+     4                                  
+     5                                  api_initmalloc: ; void api_initmalloc (void);
+     6 00000000 53                          push    ebx
+     7 00000001 BA08000000                  mov        edx, 8
+     8 00000006 2E8B1D20000000              mov        ebx, [cs:0x0020]
+     9 0000000D 89D8                        mov        eax, ebx
+    10 0000000F 0500800000                  add        eax, 32*1024
+    11 00000014 2E8B0D00000000              mov        ecx, [cs:0x0000]
+    12 0000001B 29C1                        sub        ecx, eax
+    13 0000001D CD40                        int     0x040
+    14 0000001F 5B                          pop        ebx
+    15 00000020 C3                          ret
+    16                                  

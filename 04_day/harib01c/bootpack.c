@@ -1,23 +1,23 @@
+/* 他のファイルで作った関数がありますとCコンパイラに教える */
+
 void io_hlt(void);
+void write_mem8(int addr, int data);
+
+/* 関数宣言なのに、{}がなくていきなり;を書くと、
+	他のファイルにあるからよろしくね、という意味になるのです。 */
 
 void HariMain(void)
 {
-	int i; /* 変数宣言。iという変数は、32ビットの整数型 */
-	char *p; /* pという変数は、BYTE [...]用の番地 */
 
-	for (i = 0xa0000; i <= 0xaffff; i++) {
+  int i;
+  char *p;
 
-		/*　テキストにある通り
-		warning: assignment to 'char *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-		が出る */
-		// p = (char *) i;      /* とキャストすれば、警告が消える*/
-		p = i; /* 番地を代入 */
-		*p = i & 0x0f;
-
-		/* これで write_mem8(i, i & 0x0f); の代わりになる */
-	}
-
-	for (;;) {
-		io_hlt();
-	}
+  for (i=0xa0000; i <= 0xaffff; i++) {
+    p = (char *) i;
+    *p = i & 0x0f;
+  }
+  
+  for(;;){
+    io_hlt();
+  }
 }

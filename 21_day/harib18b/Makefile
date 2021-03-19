@@ -1,0 +1,95 @@
+OBJS_BOOTPACK = bootpack.o graphic.o dsctbl.o naskfunc.o hankaku.o mysprintf.o int.o fifo.o keyboard.o mouse.o memory.o sheet.o timer.o mtask.o mystrcmp.o file.o window.o console.o
+
+MAKE     = make -r
+DEL      = rm -f
+
+CC = i386-elf-gcc
+CFLAGS = -m32 -fno-builtin
+
+# デフォルト動作
+
+default :
+	$(MAKE) img
+
+# ファイル生成規則
+
+# convHankakuTxt.c は標準ライブラリが必要なので、macOS標準のgccを使う
+convHankakuTxt : convHankakuTxt.c
+	gcc $< -o $@
+
+hankaku.c : hankaku.txt convHankakuTxt
+	./convHankakuTxt
+
+ipl10.bin : ipl10.nas
+	nasm $< -o $@ -l ipl10.lst
+
+asmhead.bin : asmhead.nas
+	nasm $< -o $@ -l asmhead.lst
+
+naskfunc.o : naskfunc.nas
+	nasm -g -f elf $< -o $@ -l naskfunc.lst
+
+bootpack.hrb : $(OBJS_BOOTPACK) hrb.ld
+	$(CC) $(CFLAGS) -march=i486 -nostdlib -Wl,-Map=bootpack.map -T hrb.ld -g $(OBJS_BOOTPACK) -o $@
+ 
+hlt.hrb: hlt.nas
+	nasm $< -o $@ -l hlt.lst
+
+hello.hrb: hello.nas
+	nasm $< -o $@ -l hello.lst
+
+hello2.hrb: hello2.nas
+	nasm $< -o $@ -l hello2.lst
+
+a_nask.o: a_nask.nas
+	nasm -g -f elf $< -o $@ -l a_nask.lst
+
+a.hrb: a_nask.o app.ld a.o
+	$(CC) $(CFLAGS) -march=i486 -nostdlib -T app.ld -g a_nask.o a.o -o $@
+
+hello3.hrb: a_nask.o app.ld hello3.o
+	$(CC) $(CFLAGS) -march=i486 -nostdlib -T app.ld -g a_nask.o hello3.o -o $@
+
+crack.hrb: app.ld crack.o
+	$(CC) $(CFLAGS) -march=i486 -nostdlib -T app.ld -g crack.o -o $@
+
+haribote.sys : asmhead.bin bootpack.hrb Makefile
+	cat asmhead.bin bootpack.hrb > haribote.sys
+
+haribote.img : ipl10.bin haribote.sys hlt.hrb hello.hrb hello2.hrb hello3.hrb a.hrb Makefile crack.hrb
+	mformat -f 1440 -C -B ipl10.bin -i haribote.img ::
+	mcopy -i haribote.img haribote.sys ::
+	mcopy -i haribote.img hlt.hrb ::
+	mcopy -i haribote.img hello.hrb ::
+	mcopy -i haribote.img hello2.hrb ::
+	mcopy -i haribote.img hello3.hrb ::
+	mcopy -i haribote.img a.hrb ::
+	mcopy -i haribote.img int.c ::
+	mcopy -i haribote.img crack.hrb ::
+
+# 一般規則
+
+%.o : %.c
+	$(CC) $(CFLAGS) -c $*.c -o $*.o
+
+# コマンド
+
+img :
+	$(MAKE) haribote.img
+
+run :
+	$(MAKE) img
+	qemu-system-i386 -drive file=haribote.img,format=raw,if=floppy -boot a
+
+clean :
+	-$(DEL) *.bin
+	-$(DEL) *.lst
+	-$(DEL) *.o
+	-$(DEL) *.sys
+	-$(DEL) *.hrb
+	-$(DEL) hankaku.c
+	-$(DEL) convHankakuTxt
+
+src_only :
+	$(MAKE) clean
+	-$(DEL) haribote.img

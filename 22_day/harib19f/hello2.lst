@@ -1,0 +1,8 @@
+     1                                  [BITS 32]
+     2 00000000 BA02000000                  MOV   EDX,2
+     3 00000005 BB[13000000]                MOV   EBX,msg
+     4 0000000A CD40                        INT   0x40
+     5 0000000C BA04000000                  MOV     EDX,4
+     6 00000011 CD40                        INT     0x40
+     7                                  msg:
+     8 00000013 68656C6C6F00                DB  "hello",0

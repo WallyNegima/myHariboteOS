@@ -1,0 +1,20 @@
+     1                                  GLOBAL	api_refreshwin
+     2                                  
+     3                                  [SECTION .text]
+     4                                  
+     5                                  api_refreshwin: ; void api_refreshwin (int win, int x0, in ty0, int x1, int y1);
+     6 00000000 57                          push    edi
+     7 00000001 56                          push    esi
+     8 00000002 53                          push    ebx
+     9 00000003 BA0C000000                  mov     edx, 12
+    10 00000008 8B5C2410                    mov     ebx, [esp + 16]   ; win
+    11 0000000C 8B442414                    mov     eax, [esp + 20]   ; x0
+    12 00000010 8B4C2418                    mov     ecx, [esp + 24]   ; y0
+    13 00000014 8B74241C                    mov     esi, [esp + 28]   ; x1
+    14 00000018 8B7C2420                    mov     edi, [esp + 32]   ; y1
+    15 0000001C CD40                        int     0x40
+    16 0000001E 5B                          pop     ebx
+    17 0000001F 5E                          pop     esi
+    18 00000020 5F                          pop     edi
+    19 00000021 C3                          ret
+    20                                  

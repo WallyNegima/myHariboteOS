@@ -1,0 +1,19 @@
+     1                                  GLOBAL  api_point
+     2                                  
+     3                                  [SECTION .text]
+     4                                  
+     5                                  api_point: ; void api_point (int win, int x, int y, int col);
+     6 00000000 57                          push    edi
+     7 00000001 56                          push    esi
+     8 00000002 53                          push    ebx
+     9 00000003 BA0B000000                  mov     edx, 11
+    10 00000008 8B5C2410                    mov     ebx, [esp + 16]   ; win
+    11 0000000C 8B742414                    mov     esi, [esp + 20]   ; x
+    12 00000010 8B7C2418                    mov     edi, [esp + 24]   ; y
+    13 00000014 8B44241C                    mov     eax, [esp + 28]   ; col
+    14 00000018 CD40                        int     0x40
+    15 0000001A 5B                          pop     ebx
+    16 0000001B 5E                          pop     esi
+    17 0000001C 5F                          pop     edi
+    18 0000001D C3                          ret
+    19                                  

@@ -9,7 +9,8 @@ void set_palette(int start, int end, unsigned char *rgb);
 void boxfill8(unsigned char *vram, int xsize, unsigned char c, int x0, int y0, int x1, int y1);
 void init_screen(char *vram, int x, int y);
 void putfont8(char *vram, int xsize, int x, int y, char c, char *font);
-void putfonts8_asc(char *vram, int xsize, int x, int y, char c, unsigned char *s);
+void putfont8_asc(char *vram, int xsize, int x, int y, char c, unsigned char *s);
+extend void sprintf(char *str, char *fmt, ...); 
 
 #define COL8_000000		0
 #define COL8_FF0000		1
@@ -29,25 +30,30 @@ void putfonts8_asc(char *vram, int xsize, int x, int y, char c, unsigned char *s
 #define COL8_848484		15
 
 struct BOOTINFO {
-	char cyls, leds, vmode, reserve;
-	short scrnx, scrny;
-	char *vram;
+  char cyls, leds, vmode, reserve;
+  short scrnx, scrny;
+  char *vram;
 };
 
 void HariMain(void)
 {
-	struct BOOTINFO *binfo = (struct BOOTINFO *) 0x0ff0;
 
-	init_palette();
-	init_screen(binfo->vram, binfo->scrnx, binfo->scrny);
-	putfonts8_asc(binfo->vram, binfo->scrnx,  8,  8, COL8_FFFFFF, "ABC 123");
-	putfonts8_asc(binfo->vram, binfo->scrnx, 31, 31, COL8_000000, "Haribote OS.");
-	putfonts8_asc(binfo->vram, binfo->scrnx, 30, 30, COL8_FFFFFF, "Haribote OS.");
+  struct BOOTINFO *binfo = (struct BOOTINFO *) 0x0ff0;
+  char s[40];
+  
+  init_palette();
+  init_screen(binfo->vram, binfo->scrnx, binfo->scrny);
+  putfont8_asc(binfo->vram, binfo->scrnx, 8,8,COL8_FFFFFF, "ABC 123");
+  putfont8_asc(binfo->vram, binfo->scrnx, 31,31,COL8_000000, "Wally OS.");
+  putfont8_asc(binfo->vram, binfo->scrnx, 30,30,COL8_FFFFFF, "Wally OS.");
+  sprintf(s, "scrnx = %d", binfo->scrnx);
+  putfont8_asc(binfo->vram, binfo->scrnx, 16, 64, COL8_FFFFFF, s);
 
-	for (;;) {
-		io_hlt();
-	}
+  for(;;){
+    io_hlt();
+  }
 }
+
 
 void init_palette(void)
 {
@@ -93,12 +99,14 @@ void set_palette(int start, int end, unsigned char *rgb)
 
 void boxfill8(unsigned char *vram, int xsize, unsigned char c, int x0, int y0, int x1, int y1)
 {
-	int x, y;
-	for (y = y0; y <= y1; y++) {
-		for (x = x0; x <= x1; x++)
-			vram[y * xsize + x] = c;
-	}
-	return;
+  int x,y;
+  for (y=y0; y <= y1; y++){
+    for (x = x0; x <= x1; x++){
+      vram[y*xsize+x] = c;
+    }
+  }
+
+  return;
 }
 
 void init_screen(char *vram, int x, int y)
@@ -122,31 +130,30 @@ void init_screen(char *vram, int x, int y)
 	return;
 }
 
-void putfont8(char *vram, int xsize, int x, int y, char c, char *font)
-{
-	int i;
-	char *p, d /* data */;
-	for (i = 0; i < 16; i++) {
-		p = vram + (y + i) * xsize + x;
-		d = font[i];
-		if ((d & 0x80) != 0) { p[0] = c; }
-		if ((d & 0x40) != 0) { p[1] = c; }
+void putfont8(char *vram, int xsize,  int x, int y, char c, char *font) {
+  int i;
+  char *p, d;
+  for (i = 0; i <16; i++) {
+    p = vram + (y+i) * xsize + x;
+    d = font[i];
+    if ((d & 0x80) != 0) { p[0] = c; }
+    if ((d & 0x40) != 0) { p[1] = c; }
 		if ((d & 0x20) != 0) { p[2] = c; }
 		if ((d & 0x10) != 0) { p[3] = c; }
 		if ((d & 0x08) != 0) { p[4] = c; }
 		if ((d & 0x04) != 0) { p[5] = c; }
 		if ((d & 0x02) != 0) { p[6] = c; }
-		if ((d & 0x01) != 0) { p[7] = c; }
-	}
-	return;
+		if ((d & 0x01) != 0) { p[7] = c; }  
+  }
+  return;
 }
 
-void putfonts8_asc(char *vram, int xsize, int x, int y, char c, unsigned char *s)
+void putfont8_asc(char *vram, int xsize, int x, int y, char c, unsigned char *s)
 {
-	extern char hankaku[4096];
-	for (; *s != 0x00; s++) {
-		putfont8(vram, xsize, x, y, c, hankaku + *s * 16);
-		x += 8;
-	}
-	return;
+  extern char hankaku[4096];
+  for (; *s != 0x00; s++){
+    putfont8(vram, xsize, x, y, c, hankaku + *s * 16);
+    x += 8;
+  }
 }
+

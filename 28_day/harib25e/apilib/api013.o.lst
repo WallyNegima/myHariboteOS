@@ -1,0 +1,23 @@
+     1                                  GLOBAL  api_linewin
+     2                                  
+     3                                  [SECTION .text]
+     4                                  
+     5                                  api_linewin: ; void api_linewin (int win, int x0, int y0, int x1, int y1, int col);
+     6 00000000 57                          push	edi
+     7 00000001 56                      	push	esi
+     8 00000002 55                      	push	ebp
+     9 00000003 53                      	push	ebx
+    10 00000004 BA0D000000              	mov		edx, 13
+    11 00000009 8B5C2414                    mov     ebx, [esp + 20]   ; win
+    12 0000000D 8B442418                    mov     eax, [esp + 24]   ; x0
+    13 00000011 8B4C241C                    mov     ecx, [esp + 28]   ; y0
+    14 00000015 8B742420                    mov     esi, [esp + 32]   ; x1
+    15 00000019 8B7C2424                    mov     edi, [esp + 36]   ; y1
+    16 0000001D 8B6C2428                    mov     ebp, [esp + 40]   ; col
+    17 00000021 CD40                        int     0x40
+    18 00000023 5B                          pop     ebx
+    19 00000024 5D                      	pop		ebp
+    20 00000025 5E                          pop     esi
+    21 00000026 5F                          pop     edi
+    22 00000027 C3                      	ret
+    23                                  

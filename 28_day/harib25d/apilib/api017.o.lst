@@ -1,0 +1,13 @@
+     1                                  GLOBAL	api_inittimer
+     2                                  
+     3                                  [SECTION .text]
+     4                                  
+     5                                  api_inittimer: ; void api_inittimer (int timer, int data);
+     6 00000000 53                      	push	ebx
+     7 00000001 BA11000000              	mov		edx, 17
+     8 00000006 8B5C2408                	mov		ebx, [esp +  8]
+     9 0000000A 8B44240C                	mov		eax, [esp + 12]
+    10 0000000E CD40                    	int		0x40
+    11 00000010 5B                      	pop 	ebx
+    12 00000011 C3                      	ret
+    13                                  

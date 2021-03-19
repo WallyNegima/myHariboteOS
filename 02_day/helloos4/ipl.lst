@@ -1,0 +1,55 @@
+     1                                  		ORG	0x7c00;
+     2                                  ; for fat12
+     3 00000000 EB4E                    		JMP	entry
+     4 00000002 90                      		DB	0x90
+     5 00000003 48454C4C4F49504C        		DB	"HELLOIPL";
+     6 0000000B 0002                    		DW	512;
+     7 0000000D 01                      		DB	1;
+     8 0000000E 0100                    		DW	1;
+     9 00000010 02                      		DB	2;
+    10 00000011 E000                    		DW	224;
+    11 00000013 400B                    		DW	2880;
+    12 00000015 F0                      		DB	0xf0;
+    13 00000016 0900                    		DW	9;
+    14 00000018 1200                    		DW	18;
+    15 0000001A 0200                    		DW	2;
+    16 0000001C 00000000                		DD	0;
+    17 00000020 400B0000                		DD	2880;
+    18 00000024 000029                  		DB	0,0,0x29;
+    19 00000027 FFFFFFFF                		DD	0xffffffff;
+    20 0000002B 48454C4C4F2D4F5320-     		DB	"HELLO-OS   ";
+    20 00000034 2020               
+    21 00000036 4641543132202020        		DB	"FAT12   ";
+    22                                  		;RESB	18;
+    23 0000003E 00<rep 12h>             		TIMES	18 DB 0;
+    24                                  ; main program
+    25                                  entry:
+    26 00000050 B80000                  		MOV		AX, 0; initialize register
+    27 00000053 8ED0                    		MOV		SS,AX
+    28 00000055 BC007C                  		MOV		SP,0x7c00
+    29 00000058 8ED8                    		MOV		DS,AX
+    30 0000005A 8EC0                    		MOV		ES,AX
+    31 0000005C BE[7400]                		MOV		SI,msg
+    32                                  putloop:
+    33 0000005F 8A04                    		MOV		AL,[SI]
+    34 00000061 83C601                  		ADD		SI, 1; add 1 to SI
+    35 00000064 3C00                    		CMP		AL,0
+    36 00000066 7409                    		JE		fin
+    37 00000068 B40E                    		MOV		AH,0x0e
+    38 0000006A BB0F00                  		MOV		BX,15
+    39 0000006D CD10                    		INT		0x10
+    40 0000006F EBEE                    		JMP		putloop
+    41                                  fin:
+    42 00000071 F4                      		HLT
+    43 00000072 EBFD                    		JMP		fin
+    44                                  msg:
+    45 00000074 0A0A                    		DB	0x0a, 0x0a;
+    46 00000076 68656C6C6F2077616C-     		DB	"hello wally!"
+    46 0000007F 6C7921             
+    47 00000082 0A                      		DB	0x0a;
+    48 00000083 00                      		DB	0
+    49                                  		
+    50 00000084 <res 17Ah>              		RESB	0x01fe-($-$$);
+    50          ******************       warning: uninitialized space declared in .text section: zeroing [-w+zeroing]
+    51                                  		
+    52 000001FE 55AA                    		DB	0x55, 0xaa

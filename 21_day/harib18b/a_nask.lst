@@ -1,0 +1,9 @@
+     1                                  [BITS 32]
+     2                                      GLOBAL    api_putchar
+     3                                  
+     4                                  [SECTION .text]
+     5                                  api_putchar:
+     6 00000000 BA01000000                  MOV   EDX,1
+     7 00000005 8A442404                    MOV   AL,[ESP+4]
+     8 00000009 CD40                        INT   0x40
+     9 0000000B C3                          RET

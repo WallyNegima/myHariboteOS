@@ -1,0 +1,14 @@
+     1                                  GLOBAL  api_free
+     2                                  
+     3                                  [SECTION .text]
+     4                                  
+     5                                  api_free: ; void api_free (char *addr, int size);
+     6 00000000 53                          push    ebx
+     7 00000001 BA0A000000                  mov     edx, 10
+     8 00000006 2E8B1D20000000              mov     ebx, [cs:0x0020]
+     9 0000000D 8B442408                    mov     eax, [esp + 8]
+    10 00000011 8B4C240C                    mov     ecx, [esp + 12]
+    11 00000015 CD40                        int     0x40
+    12 00000017 5B                          pop     ebx
+    13 00000018 C3                          ret
+    14                                  

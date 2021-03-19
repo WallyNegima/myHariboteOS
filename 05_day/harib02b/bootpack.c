@@ -1,3 +1,5 @@
+/* 他のファイルで作った関数がありますとCコンパイラに教える */
+
 void io_hlt(void);
 void io_cli(void);
 void io_out8(int port, int data);
@@ -27,29 +29,24 @@ void init_screen(char *vram, int x, int y);
 #define COL8_848484		15
 
 struct BOOTINFO {
-	char cyls, leds, vmode, reserve;
-	short scrnx, scrny;
-	char *vram;
+  char cyls, leds, vmode, reserve;
+  short scrnx, scrny;
+  char *vram;
 };
 
 void HariMain(void)
 {
-	char *vram;
-	int xsize, ysize;
-	struct BOOTINFO *binfo;
 
-	init_palette();
-	binfo = (struct BOOTINFO *) 0x0ff0;
-	xsize = (*binfo).scrnx;
-	ysize = (*binfo).scrny;
-	vram = (*binfo).vram;
+  struct BOOTINFO *binfo = (struct BOOTINFO *) 0x0ff0;
 
-	init_screen(vram, xsize, ysize);
+  init_palette();
+  init_screen(binfo->vram, binfo->scrnx, binfo->scrny);
 
-	for (;;) {
-		io_hlt();
-	}
+  for(;;){
+    io_hlt();
+  }
 }
+
 
 void init_palette(void)
 {
@@ -95,12 +92,14 @@ void set_palette(int start, int end, unsigned char *rgb)
 
 void boxfill8(unsigned char *vram, int xsize, unsigned char c, int x0, int y0, int x1, int y1)
 {
-	int x, y;
-	for (y = y0; y <= y1; y++) {
-		for (x = x0; x <= x1; x++)
-			vram[y * xsize + x] = c;
-	}
-	return;
+  int x,y;
+  for (y=y0; y <= y1; y++){
+    for (x = x0; x <= x1; x++){
+      vram[y*xsize+x] = c;
+    }
+  }
+
+  return;
 }
 
 void init_screen(char *vram, int x, int y)

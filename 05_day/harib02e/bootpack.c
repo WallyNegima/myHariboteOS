@@ -1,3 +1,5 @@
+/* ä»–ã®ãƒ•ã‚¡ã‚¤ãƒ«ã§ä½œã£ãŸé–¢æ•°ãŒã‚ã‚Šã¾ã™ã¨Cã‚³ãƒ³ãƒ‘ã‚¤ãƒ©ã«æ•™ãˆã‚‹ */
+
 void io_hlt(void);
 void io_cli(void);
 void io_out8(int port, int data);
@@ -28,61 +30,62 @@ void putfont8(char *vram, int xsize, int x, int y, char c, char *font);
 #define COL8_848484		15
 
 struct BOOTINFO {
-	char cyls, leds, vmode, reserve;
-	short scrnx, scrny;
-	char *vram;
+  char cyls, leds, vmode, reserve;
+  short scrnx, scrny;
+  char *vram;
 };
 
 void HariMain(void)
 {
-	struct BOOTINFO *binfo = (struct BOOTINFO *) 0x0ff0;
-	extern char hankaku[4096];
 
-	init_palette();
-	init_screen(binfo->vram, binfo->scrnx, binfo->scrny);
-	putfont8(binfo->vram, binfo->scrnx,  8, 8, COL8_FFFFFF, hankaku + 'A' * 16);
+  struct BOOTINFO *binfo = (struct BOOTINFO *) 0x0ff0;
+  extern char hankaku[4096];
+  
+  init_palette();
+  init_screen(binfo->vram, binfo->scrnx, binfo->scrny);
+  putfont8(binfo->vram, binfo->scrnx,  8, 8, COL8_FFFFFF, hankaku + 'A' * 16);
 	putfont8(binfo->vram, binfo->scrnx, 16, 8, COL8_FFFFFF, hankaku + 'B' * 16);
 	putfont8(binfo->vram, binfo->scrnx, 24, 8, COL8_FFFFFF, hankaku + 'C' * 16);
 	putfont8(binfo->vram, binfo->scrnx, 40, 8, COL8_FFFFFF, hankaku + '1' * 16);
 	putfont8(binfo->vram, binfo->scrnx, 48, 8, COL8_FFFFFF, hankaku + '2' * 16);
 	putfont8(binfo->vram, binfo->scrnx, 56, 8, COL8_FFFFFF, hankaku + '3' * 16);
-
-	for (;;) {
-		io_hlt();
-	}
+  for(;;){
+    io_hlt();
+  }
 }
+
 
 void init_palette(void)
 {
 	static unsigned char table_rgb[16 * 3] = {
-		0x00, 0x00, 0x00,	/*  0:• */
-		0xff, 0x00, 0x00,	/*  1:–¾‚é‚¢Ô */
-		0x00, 0xff, 0x00,	/*  2:–¾‚é‚¢—Î */
-		0xff, 0xff, 0x00,	/*  3:–¾‚é‚¢‰©F */
-		0x00, 0x00, 0xff,	/*  4:–¾‚é‚¢Â */
-		0xff, 0x00, 0xff,	/*  5:–¾‚é‚¢‡ */
-		0x00, 0xff, 0xff,	/*  6:–¾‚é‚¢…F */
-		0xff, 0xff, 0xff,	/*  7:”’ */
-		0xc6, 0xc6, 0xc6,	/*  8:–¾‚é‚¢ŠDF */
-		0x84, 0x00, 0x00,	/*  9:ˆÃ‚¢Ô */
-		0x00, 0x84, 0x00,	/* 10:ˆÃ‚¢—Î */
-		0x84, 0x84, 0x00,	/* 11:ˆÃ‚¢‰©F */
-		0x00, 0x00, 0x84,	/* 12:ˆÃ‚¢Â */
-		0x84, 0x00, 0x84,	/* 13:ˆÃ‚¢‡ */
-		0x00, 0x84, 0x84,	/* 14:ˆÃ‚¢…F */
-		0x84, 0x84, 0x84	/* 15:ˆÃ‚¢ŠDF */
+		0x00, 0x00, 0x00,	/*  0:é»’ */
+		0xff, 0x00, 0x00,	/*  1:æ˜ã‚‹ã„èµ¤ */
+		0x00, 0xff, 0x00,	/*  2:æ˜ã‚‹ã„ç·‘ */
+		0xff, 0xff, 0x00,	/*  3:æ˜ã‚‹ã„é»„è‰² */
+		0x00, 0x00, 0xff,	/*  4:æ˜ã‚‹ã„é’ */
+		0xff, 0x00, 0xff,	/*  5:æ˜ã‚‹ã„ç´« */
+		0x00, 0xff, 0xff,	/*  6:æ˜ã‚‹ã„æ°´è‰² */
+		0xff, 0xff, 0xff,	/*  7:ç™½ */
+		0xc6, 0xc6, 0xc6,	/*  8:æ˜ã‚‹ã„ç°è‰² */
+		0x84, 0x00, 0x00,	/*  9:æš—ã„èµ¤ */
+		0x00, 0x84, 0x00,	/* 10:æš—ã„ç·‘ */
+		0x84, 0x84, 0x00,	/* 11:æš—ã„é»„è‰² */
+		0x00, 0x00, 0x84,	/* 12:æš—ã„é’ */
+		0x84, 0x00, 0x84,	/* 13:æš—ã„ç´« */
+		0x00, 0x84, 0x84,	/* 14:æš—ã„æ°´è‰² */
+		0x84, 0x84, 0x84	/* 15:æš—ã„ç°è‰² */
 	};
 	set_palette(0, 15, table_rgb);
 	return;
 
-	/* static char –½—ß‚ÍAƒf[ƒ^‚É‚µ‚©g‚¦‚È‚¢‚¯‚ÇDB–½—ß‘Š“– */
+	/* static char å‘½ä»¤ã¯ã€ãƒ‡ãƒ¼ã‚¿ã«ã—ã‹ä½¿ãˆãªã„ã‘ã©DBå‘½ä»¤ç›¸å½“ */
 }
 
 void set_palette(int start, int end, unsigned char *rgb)
 {
 	int i, eflags;
-	eflags = io_load_eflags();	/* Š„‚è‚İ‹–‰Âƒtƒ‰ƒO‚Ì’l‚ğ‹L˜^‚·‚é */
-	io_cli(); 					/* ‹–‰Âƒtƒ‰ƒO‚ğ0‚É‚µ‚ÄŠ„‚è‚İ‹Ö~‚É‚·‚é */
+	eflags = io_load_eflags();	/* å‰²ã‚Šè¾¼ã¿è¨±å¯ãƒ•ãƒ©ã‚°ã®å€¤ã‚’è¨˜éŒ²ã™ã‚‹ */
+	io_cli(); 					/* è¨±å¯ãƒ•ãƒ©ã‚°ã‚’0ã«ã—ã¦å‰²ã‚Šè¾¼ã¿ç¦æ­¢ã«ã™ã‚‹ */
 	io_out8(0x03c8, start);
 	for (i = start; i <= end; i++) {
 		io_out8(0x03c9, rgb[0] / 4);
@@ -90,18 +93,20 @@ void set_palette(int start, int end, unsigned char *rgb)
 		io_out8(0x03c9, rgb[2] / 4);
 		rgb += 3;
 	}
-	io_store_eflags(eflags);	/* Š„‚è‚İ‹–‰Âƒtƒ‰ƒO‚ğŒ³‚É–ß‚· */
+	io_store_eflags(eflags);	/* å‰²ã‚Šè¾¼ã¿è¨±å¯ãƒ•ãƒ©ã‚°ã‚’å…ƒã«æˆ»ã™ */
 	return;
 }
 
 void boxfill8(unsigned char *vram, int xsize, unsigned char c, int x0, int y0, int x1, int y1)
 {
-	int x, y;
-	for (y = y0; y <= y1; y++) {
-		for (x = x0; x <= x1; x++)
-			vram[y * xsize + x] = c;
-	}
-	return;
+  int x,y;
+  for (y=y0; y <= y1; y++){
+    for (x = x0; x <= x1; x++){
+      vram[y*xsize+x] = c;
+    }
+  }
+
+  return;
 }
 
 void init_screen(char *vram, int x, int y)
@@ -125,21 +130,19 @@ void init_screen(char *vram, int x, int y)
 	return;
 }
 
-void putfont8(char *vram, int xsize, int x, int y, char c, char *font)
-{
-	int i;
-	char *p, d /* data */;
-	for (i = 0; i < 16; i++) {
-		p = vram + (y + i) * xsize + x;
-		d = font[i];
-		if ((d & 0x80) != 0) { p[0] = c; }
-		if ((d & 0x40) != 0) { p[1] = c; }
+void putfont8(char *vram, int xsize,  int x, int y, char c, char *font) {
+  int i;
+  char *p, d;
+  for (i = 0; i <16; i++) {
+    p = vram + (y+i) * xsize + x;
+    d = font[i];
+    if ((d & 0x80) != 0) { p[0] = c; }
+    if ((d & 0x40) != 0) { p[1] = c; }
 		if ((d & 0x20) != 0) { p[2] = c; }
 		if ((d & 0x10) != 0) { p[3] = c; }
 		if ((d & 0x08) != 0) { p[4] = c; }
 		if ((d & 0x04) != 0) { p[5] = c; }
 		if ((d & 0x02) != 0) { p[6] = c; }
-		if ((d & 0x01) != 0) { p[7] = c; }
-	}
-	return;
+		if ((d & 0x01) != 0) { p[7] = c; }  
+  }
 }

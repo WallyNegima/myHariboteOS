@@ -1,0 +1,7 @@
+{
+  "files.associations": {
+    "bootpack.h": "c",
+    "apilib.h": "c",
+    "string.h": "c"
+  }
+}

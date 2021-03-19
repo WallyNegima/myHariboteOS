@@ -1,0 +1,8 @@
+     1                                  [BITS 32]; 32ビットモード用の機械語を作らせる宣言
+     2                                  
+     3                                  ;[FILE "naskfunc.nas"] ; ソールファイル名．nasmではエラーがでる
+     4                                  		GLOBAL		io_hlt
+     5                                  [SECTION	.text]
+     6                                  io_hlt: ; void io_hlt(void)
+     7 00000000 F4                      		HLT
+     8 00000001 C3                      		RET

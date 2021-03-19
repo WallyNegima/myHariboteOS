@@ -1,0 +1,10 @@
+     1                                  [BITS 32]
+     2                                  
+     3                                  GLOBAL	api_putchar
+     4                                  
+     5                                  api_putchar:   ; void api_putchar (int c);
+     6 00000000 BA01000000                  mov     edx, 1
+     7 00000005 8A442404                    mov     al,[esp+4]   ; c
+     8 00000009 CD40                        int     0x40
+     9 0000000B C3                          ret
+    10                                  

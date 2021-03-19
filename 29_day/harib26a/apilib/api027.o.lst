@@ -1,0 +1,10 @@
+     1                                  [BITS 32]
+     2                                  
+     3                                  		GLOBAL	api_getlang
+     4                                  
+     5                                  [SECTION .text]
+     6                                  
+     7                                  api_getlang:		; int api_getlang(void);
+     8 00000000 BA1B000000              		MOV		EDX,27
+     9 00000005 CD40                    		INT		0x40
+    10 00000007 C3                      		RET

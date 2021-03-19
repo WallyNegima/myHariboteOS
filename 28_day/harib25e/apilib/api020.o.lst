@@ -1,0 +1,12 @@
+     1                                  [BITS 32]
+     2                                  
+     3                                  GLOBAL	api_beep
+     4                                  
+     5                                  [SECTION .text]
+     6                                  
+     7                                  api_beep: ; void api_beep (int tone);
+     8 00000000 BA14000000              	mov	  	edx, 20
+     9 00000005 8B442404                	mov		eax, [esp + 4]
+    10 00000009 CD40                    	int		0x40
+    11 0000000B C3                      	ret
+    12                                  

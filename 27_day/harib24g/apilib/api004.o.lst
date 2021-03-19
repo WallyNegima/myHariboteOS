@@ -1,0 +1,9 @@
+     1                                  [SECTION .text]
+     2                                  
+     3                                  GLOBAL  api_end
+     4                                  
+     5                                  api_end:  ; void api_end (void);
+     6 00000000 BA04000000                  mov     edx, 4
+     7 00000005 CD40                        int     0x40
+     8                                  
+     9                                  

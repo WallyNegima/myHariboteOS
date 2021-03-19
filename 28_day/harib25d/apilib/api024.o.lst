@@ -1,0 +1,12 @@
+     1                                  [BITS 32]
+     2                                  
+     3                                  		GLOBAL	api_fsize
+     4                                  
+     5                                  [SECTION .text]
+     6                                  
+     7                                  api_fsize:			; int api_fsize(int fhandle, int mode);
+     8 00000000 BA18000000              		MOV		EDX,24
+     9 00000005 8B442404                		MOV		EAX,[ESP+4]			; fhandle
+    10 00000009 8B4C2408                		MOV		ECX,[ESP+8]			; mode
+    11 0000000D CD40                    		INT		0x40
+    12 0000000F C3                      		RET

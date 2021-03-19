@@ -1,0 +1,12 @@
+     1                                  GLOBAL	api_freetimer
+     2                                  
+     3                                  [SECTION .text]
+     4                                  
+     5                                  api_freetimer: ; void api_freetimer (int timer);
+     6 00000000 53                      	push	ebx
+     7 00000001 BA13000000              	mov		edx, 19
+     8 00000006 8B5C2408                	mov		ebx, [esp + 8]
+     9 0000000A CD40                    	int		0x40
+    10 0000000C 5B                      	pop		ebx
+    11 0000000D C3                      	ret
+    12                                  

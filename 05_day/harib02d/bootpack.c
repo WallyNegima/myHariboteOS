@@ -1,3 +1,5 @@
+/* 他のファイルで作った関数がありますとCコンパイラに教える */
+
 void io_hlt(void);
 void io_cli(void);
 void io_out8(int port, int data);
@@ -28,27 +30,28 @@ void putfont8(char *vram, int xsize, int x, int y, char c, char *font);
 #define COL8_848484		15
 
 struct BOOTINFO {
-	char cyls, leds, vmode, reserve;
-	short scrnx, scrny;
-	char *vram;
+  char cyls, leds, vmode, reserve;
+  short scrnx, scrny;
+  char *vram;
 };
 
 void HariMain(void)
 {
-	struct BOOTINFO *binfo = (struct BOOTINFO *) 0x0ff0;
-	static char font_A[16] = {
-		0x00, 0x18, 0x18, 0x18, 0x18, 0x24, 0x24, 0x24,
+
+  struct BOOTINFO *binfo = (struct BOOTINFO *) 0x0ff0;
+  static char font_A[16] = {
+  	0x00, 0x18, 0x18, 0x18, 0x18, 0x24, 0x24, 0x24,
 		0x24, 0x7e, 0x42, 0x42, 0x42, 0xe7, 0x00, 0x00
-	};
+  };
+  init_palette();
+  init_screen(binfo->vram, binfo->scrnx, binfo->scrny);
+  putfont8(binfo->vram, binfo->scrnx, 10, 10, COL8_FFFFFF, font_A);
 
-	init_palette();
-	init_screen(binfo->vram, binfo->scrnx, binfo->scrny);
-	putfont8(binfo->vram, binfo->scrnx, 10, 10, COL8_FFFFFF, font_A);
-
-	for (;;) {
-		io_hlt();
-	}
+  for(;;){
+    io_hlt();
+  }
 }
+
 
 void init_palette(void)
 {
@@ -94,12 +97,14 @@ void set_palette(int start, int end, unsigned char *rgb)
 
 void boxfill8(unsigned char *vram, int xsize, unsigned char c, int x0, int y0, int x1, int y1)
 {
-	int x, y;
-	for (y = y0; y <= y1; y++) {
-		for (x = x0; x <= x1; x++)
-			vram[y * xsize + x] = c;
-	}
-	return;
+  int x,y;
+  for (y=y0; y <= y1; y++){
+    for (x = x0; x <= x1; x++){
+      vram[y*xsize+x] = c;
+    }
+  }
+
+  return;
 }
 
 void init_screen(char *vram, int x, int y)
@@ -123,21 +128,19 @@ void init_screen(char *vram, int x, int y)
 	return;
 }
 
-void putfont8(char *vram, int xsize, int x, int y, char c, char *font)
-{
-	int i;
-	char *p, d /* data */;
-	for (i = 0; i < 16; i++) {
-		p = vram + (y + i) * xsize + x;
-		d = font[i];
-		if ((d & 0x80) != 0) { p[0] = c; }
-		if ((d & 0x40) != 0) { p[1] = c; }
+void putfont8(char *vram, int xsize,  int x, int y, char c, char *font) {
+  int i;
+  char *p, d;
+  for (i = 0; i <16; i++) {
+    p = vram + (y+i) * xsize + x;
+    d = font[i];
+    if ((d & 0x80) != 0) { p[0] = c; }
+    if ((d & 0x40) != 0) { p[1] = c; }
 		if ((d & 0x20) != 0) { p[2] = c; }
 		if ((d & 0x10) != 0) { p[3] = c; }
 		if ((d & 0x08) != 0) { p[4] = c; }
 		if ((d & 0x04) != 0) { p[5] = c; }
 		if ((d & 0x02) != 0) { p[6] = c; }
-		if ((d & 0x01) != 0) { p[7] = c; }
-	}
-	return;
+		if ((d & 0x01) != 0) { p[7] = c; }  
+  }
 }

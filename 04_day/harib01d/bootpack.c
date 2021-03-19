@@ -1,17 +1,24 @@
+/* 他のファイルで作った関数がありますとCコンパイラに教える */
+
 void io_hlt(void);
+void write_mem8(int addr, int data);
+
+/* 関数宣言なのに、{}がなくていきなり;を書くと、
+	他のファイルにあるからよろしくね、という意味になるのです。 */
 
 void HariMain(void)
 {
-	int i; /* 変数宣言。iという変数は、32ビットの整数型 */
-	char *p; /* pという変数は、BYTE [...]用の番地 */
 
-	p = (char *) 0xa0000; /* 番地を代入 */
+  int i;
+  char *p;
 
-	for (i = 0; i <= 0xffff; i++) {
-		*(p + i) = i & 0x0f;
-	}
+  p = (char *) 0xa0000;
 
-	for (;;) {
-		io_hlt();
-	}
+  for (i=0; i <= 0xaffff; i++) {
+    p[i] = i & 0x0f;
+  }
+  
+  for(;;){
+    io_hlt();
+  }
 }

@@ -1,62 +1,52 @@
-; hello-os
-; TAB=4
-
-		ORG		0x7c00			; このプログラムがどこに読み込まれるのか
-
-; 以下は標準的なFAT12フォーマットフロッピーディスクのための記述
-
-		JMP		entry
-		DB		0x90
-		DB		"HELLOIPL"		; ブートセクタの名前を自由に書いてよい（8バイト）
-		DW		512				; 1セクタの大きさ（512にしなければいけない）
-		DB		1				; クラスタの大きさ（1セクタにしなければいけない）
-		DW		1				; FATがどこから始まるか（普通は1セクタ目からにする）
-		DB		2				; FATの個数（2にしなければいけない）
-		DW		224				; ルートディレクトリ領域の大きさ（普通は224エントリにする）
-		DW		2880			; このドライブの大きさ（2880セクタにしなければいけない）
-		DB		0xf0			; メディアのタイプ（0xf0にしなければいけない）
-		DW		9				; FAT領域の長さ（9セクタにしなければいけない）
-		DW		18				; 1トラックにいくつのセクタがあるか（18にしなければいけない）
-		DW		2				; ヘッドの数（2にしなければいけない）
-		DD		0				; パーティションを使ってないのでここは必ず0
-		DD		2880			; このドライブ大きさをもう一度書く
-		DB		0,0,0x29		; よくわからないけどこの値にしておくといいらしい
-		DD		0xffffffff		; たぶんボリュームシリアル番号
-		DB		"HELLO-OS   "	; ディスクの名前（11バイト）
-		DB		"FAT12   "		; フォーマットの名前（8バイト）
-		;RESB	18				; とりあえず18バイトあけておく
-		TIMES	18 DB 0		; NASMでは警告が出るので修正
-
-; プログラム本体
-
+		ORG	0x7c00;
+; for fat12
+		JMP	entry
+		DB	0x90
+		DB	"HELLOIPL";
+		DW	512;
+		DB	1;
+		DW	1;
+		DB	2;
+		DW	224;
+		DW	2880;
+		DB	0xf0;
+		DW	9;
+		DW	18;
+		DW	2;
+		DD	0;
+		DD	2880;
+		DB	0,0,0x29;
+		DD	0xffffffff;
+		DB	"HELLO-OS   ";
+		DB	"FAT12   ";
+		;RESB	18;
+		TIMES	18 DB 0;
+; main program
 entry:
-		MOV		AX,0			; レジスタ初期化
+		MOV		AX, 0; initialize register
 		MOV		SS,AX
 		MOV		SP,0x7c00
 		MOV		DS,AX
 		MOV		ES,AX
-
 		MOV		SI,msg
 putloop:
 		MOV		AL,[SI]
-		ADD		SI,1			; SIに1を足す
+		ADD		SI, 1; add 1 to SI
 		CMP		AL,0
 		JE		fin
-		MOV		AH,0x0e			; 一文字表示ファンクション
-		MOV		BX,15			; カラーコード
-		INT		0x10			; ビデオBIOS呼び出し
+		MOV		AH,0x0e
+		MOV		BX,15
+		INT		0x10
 		JMP		putloop
 fin:
-		HLT						; 何かあるまでCPUを停止させる
-		JMP		fin				; 無限ループ
-
+		HLT
+		JMP		fin
 msg:
-		DB		0x0a, 0x0a		; 改行を2つ
-		DB		"hello, world"
-		DB		0x0a			; 改行
-		DB		0
-
-		;RESB	0x7dfe-$		; 0x7dfeまでを0x00で埋める命令
-		TIMES	0x1fe-($-$$) DB 0	;NASM用に修正 $から$-$$に、RESBからTIMES DB0へ
-
-		DB		0x55, 0xaa
+		DB	0x0a, 0x0a;
+		DB	"hello wally!"
+		DB	0x0a;
+		DB	0
+		
+		RESB	0x01fe-($-$$);
+		
+		DB	0x55, 0xaa

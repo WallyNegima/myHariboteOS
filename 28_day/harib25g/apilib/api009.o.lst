@@ -1,0 +1,13 @@
+     1                                  GLOBAL  api_malloc
+     2                                  
+     3                                  [SECTION .text]
+     4                                  
+     5                                  api_malloc: ; char *api_malloc (int size);
+     6 00000000 53                          push    ebx
+     7 00000001 BA09000000                  mov     edx, 9
+     8 00000006 2E8B1D20000000              mov     ebx, [cs:0x0020]
+     9 0000000D 8B4C2408                    mov     ecx, [esp+8]
+    10 00000011 CD40                        int     0x40
+    11 00000013 5B                          pop     ebx
+    12 00000014 C3                          ret
+    13                                  

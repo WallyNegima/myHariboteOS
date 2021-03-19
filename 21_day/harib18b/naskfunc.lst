@@ -1,0 +1,400 @@
+     1                                  ; naskfunc
+     2                                  ; TAB=4
+     3                                  
+     4                                  ;[FORMAT "WCOFF"]				; オブジェクトファイルを作るモード ; NASMではエラーが出るのでこの行削除	
+     5                                  ;[INSTRSET "i486p"]				; 486の命令まで使いたいという記述 ; NASMではエラーが出るのでこの行削除
+     6                                  [BITS 32]						; 32ビットモード用の機械語を作らせる
+     7                                  ;[FILE "naskfunc.nas"]			; ソースファイル名情報 ; NASMではエラーが出るのでこの行削除
+     8                                  
+     9                                  		; 以下、アンダーバー付き関数名からアンダーバー除いた関数名に修正する
+    10                                  		; _io_hlt →　io_hlt など
+    11                                  		GLOBAL	io_hlt, io_cli, io_sti, io_stihlt
+    12                                  		GLOBAL	io_in8,  io_in16,  io_in32
+    13                                  		GLOBAL	io_out8, io_out16, io_out32
+    14                                  		GLOBAL	io_load_eflags, io_store_eflags
+    15                                  		GLOBAL	load_gdtr, load_idtr
+    16                                  		GLOBAL	load_cr0, store_cr0
+    17                                  		GLOBAL	load_tr
+    18                                  		GLOBAL	asm_inthandler20, asm_inthandler21, asm_inthandler27, asm_inthandler2c
+    19                                  		GLOBAL	memtest_sub
+    20                                  		GLOBAL	farjmp
+    21                                  		GLOBAL	asm_hrb_api
+    22                                  		GLOBAL	farcall
+    23                                  		GLOBAL	start_app
+    24                                  		EXTERN	inthandler20, inthandler21
+    25                                  		EXTERN  inthandler27, inthandler2c
+    26                                  		EXTERN	hrb_api
+    27                                  
+    28                                  [SECTION .text]
+    29                                  
+    30                                  io_hlt:	; void io_hlt(void);
+    31 00000000 F4                      		HLT
+    32 00000001 C3                      		RET
+    33                                  
+    34                                  io_cli:	; void io_cli(void);
+    35 00000002 FA                      		CLI
+    36 00000003 C3                      		RET
+    37                                  
+    38                                  io_sti:	; void io_sti(void);
+    39 00000004 FB                      		STI
+    40 00000005 C3                      		RET
+    41                                  
+    42                                  io_stihlt:	; void io_stihlt(void);
+    43 00000006 FB                      		STI
+    44 00000007 F4                      		HLT
+    45 00000008 C3                      		RET
+    46                                  
+    47                                  io_in8:	; int io_in8(int port);
+    48 00000009 8B542404                		MOV		EDX,[ESP+4]		; port
+    49 0000000D B800000000              		MOV		EAX,0
+    50 00000012 EC                      		IN		AL,DX
+    51 00000013 C3                      		RET
+    52                                  
+    53                                  io_in16:	; int io_in16(int port);
+    54 00000014 8B542404                		MOV		EDX,[ESP+4]		; port
+    55 00000018 B800000000              		MOV		EAX,0
+    56 0000001D 66ED                    		IN		AX,DX
+    57 0000001F C3                      		RET
+    58                                  
+    59                                  io_in32:	; int io_in32(int port);
+    60 00000020 8B542404                		MOV		EDX,[ESP+4]		; port
+    61 00000024 ED                      		IN		EAX,DX
+    62 00000025 C3                      		RET
+    63                                  
+    64                                  io_out8:	; void io_out8(int port, int data);
+    65 00000026 8B542404                		MOV		EDX,[ESP+4]		; port
+    66 0000002A 8A442408                		MOV		AL,[ESP+8]		; data
+    67 0000002E EE                      		OUT		DX,AL
+    68 0000002F C3                      		RET
+    69                                  
+    70                                  io_out16:	; void io_out16(int port, int data);
+    71 00000030 8B542404                		MOV		EDX,[ESP+4]		; port
+    72 00000034 8B442408                		MOV		EAX,[ESP+8]		; data
+    73 00000038 66EF                    		OUT		DX,AX
+    74 0000003A C3                      		RET
+    75                                  
+    76                                  io_out32:	; void io_out32(int port, int data);
+    77 0000003B 8B542404                		MOV		EDX,[ESP+4]		; port
+    78 0000003F 8B442408                		MOV		EAX,[ESP+8]		; data
+    79 00000043 EF                      		OUT		DX,EAX
+    80 00000044 C3                      		RET
+    81                                  
+    82                                  io_load_eflags:	; int io_load_eflags(void);
+    83 00000045 9C                      		PUSHFD		; PUSH EFLAGS という意味
+    84 00000046 58                      		POP		EAX
+    85 00000047 C3                      		RET
+    86                                  
+    87                                  io_store_eflags:	; void io_store_eflags(int eflags);
+    88 00000048 8B442404                		MOV		EAX,[ESP+4]
+    89 0000004C 50                      		PUSH	EAX
+    90 0000004D 9D                      		POPFD		; POP EFLAGS という意味
+    91 0000004E C3                      		RET
+    92                                  
+    93                                  load_gdtr:		; void load_gdtr(int limit, int addr);
+    94 0000004F 668B442404              		MOV		AX,[ESP+4]		; limit
+    95 00000054 6689442406              		MOV		[ESP+6],AX
+    96 00000059 0F01542406              		LGDT	[ESP+6]
+    97 0000005E C3                      		RET
+    98                                  
+    99                                  load_idtr:		; void load_idtr(int limit, int addr);
+   100 0000005F 668B442404              		MOV		AX,[ESP+4]		; limit
+   101 00000064 6689442406              		MOV		[ESP+6],AX
+   102 00000069 0F015C2406              		LIDT	[ESP+6]
+   103 0000006E C3                      		RET
+   104                                  
+   105                                  load_cr0:
+   106 0000006F 0F20C0                  		MOV		EAX,CR0
+   107 00000072 C3                      		RET
+   108                                  
+   109                                  store_cr0:
+   110 00000073 8B442404                		MOV		EAX,[ESP+4]
+   111 00000077 0F22C0                  		MOV		CR0,EAX
+   112 0000007A C3                      		RET
+   113                                  
+   114                                  load_tr:
+   115 0000007B 0F005C2404              		LTR		[ESP+4]
+   116 00000080 C3                      		RET
+   117                                  
+   118                                  asm_inthandler20:
+   119 00000081 06                      		PUSH	ES
+   120 00000082 1E                      		PUSH	DS
+   121 00000083 60                      		PUSHAD
+   122 00000084 668CD0                  		MOV		AX,SS
+   123 00000087 6683F808                		CMP		AX,1*8
+   124 0000008B 7517                    		JNE		.from_app
+   125                                  ;	OS�������Ă���Ƃ��Ɋ��荞�܂ꂽ�̂łقڍ��܂łǂ���
+   126 0000008D 89E0                    		MOV		EAX,ESP
+   127 0000008F 16                      		PUSH	SS				; ���荞�܂ꂽ�Ƃ���SS��ۑ�
+   128 00000090 50                      		PUSH	EAX				; ���荞�܂ꂽ�Ƃ���ESP��ۑ�
+   129 00000091 668CD0                  		MOV		AX,SS
+   130 00000094 8ED8                    		MOV		DS,AX
+   131 00000096 8EC0                    		MOV		ES,AX
+   132 00000098 E8(00000000)            		CALL	inthandler20
+   133 0000009D 83C408                  		ADD		ESP,8
+   134 000000A0 61                      		POPAD
+   135 000000A1 1F                      		POP		DS
+   136 000000A2 07                      		POP		ES
+   137 000000A3 CF                      		IRETD
+   138                                  .from_app:
+   139                                  ;	�A�v���������Ă���Ƃ��Ɋ��荞�܂ꂽ
+   140 000000A4 B808000000              		MOV		EAX,1*8
+   141 000000A9 8ED8                    		MOV		DS,AX			; �Ƃ肠����DS����OS�p�ɂ���
+   142 000000AB 8B0DE40F0000            		MOV		ECX,[0xfe4]		; OS��ESP
+   143 000000B1 83C1F8                  		ADD		ECX,-8
+   144 000000B4 8C5104                  		MOV		[ECX+4],SS		; ���荞�܂ꂽ�Ƃ���SS��ۑ�
+   145 000000B7 8921                    		MOV		[ECX  ],ESP		; ���荞�܂ꂽ�Ƃ���ESP��ۑ�
+   146 000000B9 8ED0                    		MOV		SS,AX
+   147 000000BB 8EC0                    		MOV		ES,AX
+   148 000000BD 89CC                    		MOV		ESP,ECX
+   149 000000BF E8(00000000)            		CALL	inthandler20
+   150 000000C4 59                      		POP		ECX
+   151 000000C5 58                      		POP		EAX
+   152 000000C6 8ED0                    		MOV		SS,AX			; SS��A�v���p�ɖ߂�
+   153 000000C8 89CC                    		MOV		ESP,ECX			; ESP��A�v���p�ɖ߂�
+   154 000000CA 61                      		POPAD
+   155 000000CB 1F                      		POP		DS
+   156 000000CC 07                      		POP		ES
+   157 000000CD CF                      		IRETD
+   158                                  
+   159                                  asm_inthandler21:
+   160 000000CE 06                      		PUSH	ES
+   161 000000CF 1E                      		PUSH	DS
+   162 000000D0 60                      		PUSHAD
+   163 000000D1 668CD0                  		MOV		AX,SS
+   164 000000D4 6683F808                		CMP		AX,1*8
+   165 000000D8 7517                    		JNE		.from_app
+   166                                  ;	OS�������Ă���Ƃ��Ɋ��荞�܂ꂽ�̂łقڍ��܂łǂ���
+   167 000000DA 89E0                    		MOV		EAX,ESP
+   168 000000DC 16                      		PUSH	SS				; ���荞�܂ꂽ�Ƃ���SS��ۑ�
+   169 000000DD 50                      		PUSH	EAX				; ���荞�܂ꂽ�Ƃ���ESP��ۑ�
+   170 000000DE 668CD0                  		MOV		AX,SS
+   171 000000E1 8ED8                    		MOV		DS,AX
+   172 000000E3 8EC0                    		MOV		ES,AX
+   173 000000E5 E8(00000000)            		CALL	inthandler21
+   174 000000EA 83C408                  		ADD		ESP,8
+   175 000000ED 61                      		POPAD
+   176 000000EE 1F                      		POP		DS
+   177 000000EF 07                      		POP		ES
+   178 000000F0 CF                      		IRETD
+   179                                  .from_app:
+   180                                  ;	�A�v���������Ă���Ƃ��Ɋ��荞�܂ꂽ
+   181 000000F1 B808000000              		MOV		EAX,1*8
+   182 000000F6 8ED8                    		MOV		DS,AX			; �Ƃ肠����DS����OS�p�ɂ���
+   183 000000F8 8B0DE40F0000            		MOV		ECX,[0xfe4]		; OS��ESP
+   184 000000FE 83C1F8                  		ADD		ECX,-8
+   185 00000101 8C5104                  		MOV		[ECX+4],SS		; ���荞�܂ꂽ�Ƃ���SS��ۑ�
+   186 00000104 8921                    		MOV		[ECX  ],ESP		; ���荞�܂ꂽ�Ƃ���ESP��ۑ�
+   187 00000106 8ED0                    		MOV		SS,AX
+   188 00000108 8EC0                    		MOV		ES,AX
+   189 0000010A 89CC                    		MOV		ESP,ECX
+   190 0000010C E8(00000000)            		CALL	inthandler21
+   191 00000111 59                      		POP		ECX
+   192 00000112 58                      		POP		EAX
+   193 00000113 8ED0                    		MOV		SS,AX			; SS��A�v���p�ɖ߂�
+   194 00000115 89CC                    		MOV		ESP,ECX			; ESP��A�v���p�ɖ߂�
+   195 00000117 61                      		POPAD
+   196 00000118 1F                      		POP		DS
+   197 00000119 07                      		POP		ES
+   198 0000011A CF                      		IRETD
+   199                                  
+   200                                  asm_inthandler27:
+   201 0000011B 06                      		PUSH	ES
+   202 0000011C 1E                      		PUSH	DS
+   203 0000011D 60                      		PUSHAD
+   204 0000011E 668CD0                  		MOV		AX,SS
+   205 00000121 6683F808                		CMP		AX,1*8
+   206 00000125 7517                    		JNE		.from_app
+   207                                  ;	OS�������Ă���Ƃ��Ɋ��荞�܂ꂽ�̂łقڍ��܂łǂ���
+   208 00000127 89E0                    		MOV		EAX,ESP
+   209 00000129 16                      		PUSH	SS				; ���荞�܂ꂽ�Ƃ���SS��ۑ�
+   210 0000012A 50                      		PUSH	EAX				; ���荞�܂ꂽ�Ƃ���ESP��ۑ�
+   211 0000012B 668CD0                  		MOV		AX,SS
+   212 0000012E 8ED8                    		MOV		DS,AX
+   213 00000130 8EC0                    		MOV		ES,AX
+   214 00000132 E8(00000000)            		CALL	inthandler27
+   215 00000137 83C408                  		ADD		ESP,8
+   216 0000013A 61                      		POPAD
+   217 0000013B 1F                      		POP		DS
+   218 0000013C 07                      		POP		ES
+   219 0000013D CF                      		IRETD
+   220                                  .from_app:
+   221 0000013E B808000000              		MOV		EAX,1*8
+   222 00000143 8ED8                    		MOV		DS,AX			; �Ƃ肠����DS����OS�p�ɂ���
+   223 00000145 8B0DE40F0000            		MOV		ECX,[0xfe4]		; OS��ESP
+   224 0000014B 83C1F8                  		ADD		ECX,-8
+   225 0000014E 8C5104                  		MOV		[ECX+4],SS		; ���荞�܂ꂽ�Ƃ���SS��ۑ�
+   226 00000151 8921                    		MOV		[ECX  ],ESP		; ���荞�܂ꂽ�Ƃ���ESP��ۑ�
+   227 00000153 8ED0                    		MOV		SS,AX
+   228 00000155 8EC0                    		MOV		ES,AX
+   229 00000157 89CC                    		MOV		ESP,ECX
+   230 00000159 E8(00000000)            		CALL	inthandler27
+   231 0000015E 59                      		POP		ECX
+   232 0000015F 58                      		POP		EAX
+   233 00000160 8ED0                    		MOV		SS,AX			; SS��A�v���p�ɖ߂�
+   234 00000162 89CC                    		MOV		ESP,ECX			; ESP��A�v���p�ɖ߂�
+   235 00000164 61                      		POPAD
+   236 00000165 1F                      		POP		DS
+   237 00000166 07                      		POP		ES
+   238 00000167 CF                      		IRETD
+   239                                  
+   240                                  asm_inthandler2c:
+   241 00000168 06                      		PUSH	ES
+   242 00000169 1E                      		PUSH	DS
+   243 0000016A 60                      		PUSHAD
+   244 0000016B 668CD0                  		MOV		AX,SS
+   245 0000016E 6683F808                		CMP		AX,1*8
+   246 00000172 7517                    		JNE		.from_app
+   247                                  ;	OS�������Ă���Ƃ��Ɋ��荞�܂ꂽ�̂łقڍ��܂łǂ���
+   248 00000174 89E0                    		MOV		EAX,ESP
+   249 00000176 16                      		PUSH	SS				; ���荞�܂ꂽ�Ƃ���SS��ۑ�
+   250 00000177 50                      		PUSH	EAX				; ���荞�܂ꂽ�Ƃ���ESP��ۑ�
+   251 00000178 668CD0                  		MOV		AX,SS
+   252 0000017B 8ED8                    		MOV		DS,AX
+   253 0000017D 8EC0                    		MOV		ES,AX
+   254 0000017F E8(00000000)            		CALL	inthandler2c
+   255 00000184 83C408                  		ADD		ESP,8
+   256 00000187 61                      		POPAD
+   257 00000188 1F                      		POP		DS
+   258 00000189 07                      		POP		ES
+   259 0000018A CF                      		IRETD
+   260                                  .from_app:
+   261                                  ;	�A�v���������Ă���Ƃ��Ɋ��荞�܂ꂽ
+   262 0000018B B808000000              		MOV		EAX,1*8
+   263 00000190 8ED8                    		MOV		DS,AX			; �Ƃ肠����DS����OS�p�ɂ���
+   264 00000192 8B0DE40F0000            		MOV		ECX,[0xfe4]		; OS��ESP
+   265 00000198 83C1F8                  		ADD		ECX,-8
+   266 0000019B 8C5104                  		MOV		[ECX+4],SS		; ���荞�܂ꂽ�Ƃ���SS��ۑ�
+   267 0000019E 8921                    		MOV		[ECX  ],ESP		; ���荞�܂ꂽ�Ƃ���ESP��ۑ�
+   268 000001A0 8ED0                    		MOV		SS,AX
+   269 000001A2 8EC0                    		MOV		ES,AX
+   270 000001A4 89CC                    		MOV		ESP,ECX
+   271 000001A6 E8(00000000)            		CALL	inthandler2c
+   272 000001AB 59                      		POP		ECX
+   273 000001AC 58                      		POP		EAX
+   274 000001AD 8ED0                    		MOV		SS,AX			; SS��A�v���p�ɖ߂�
+   275 000001AF 89CC                    		MOV		ESP,ECX			; ESP��A�v���p�ɖ߂�
+   276 000001B1 61                      		POPAD
+   277 000001B2 1F                      		POP		DS
+   278 000001B3 07                      		POP		ES
+   279 000001B4 CF                      		IRETD
+   280                                  
+   281                                  memtest_sub:
+   282 000001B5 57                      		PUSH		EDI
+   283 000001B6 56                      		PUSH		ESI
+   284 000001B7 53                      		PUSH		EBX
+   285 000001B8 BE55AA55AA              		MOV			ESI, 0xaa55aa55
+   286 000001BD BFAA55AA55              		MOV			EDI, 0x55aa55aa
+   287 000001C2 8B442410                		MOV			EAX,[ESP+12+4]
+   288                                  
+   289                                  mts_loop:
+   290 000001C6 89C3                    		MOV		EBX,EAX
+   291 000001C8 81C3FC0F0000            		ADD		EBX, 0xffc
+   292 000001CE 8B13                    		MOV		EDX,[EBX]
+   293 000001D0 8933                    		MOV		[EBX],ESI
+   294 000001D2 8333FF                  		XOR		DWORD [EBX], 0xffffffff;
+   295 000001D5 3B3B                    		CMP		EDI,[EBX]
+   296 000001D7 7518                    		JNE		mts_fin
+   297 000001D9 8333FF                  		XOR		DWORD [EBX], 0xffffffff;
+   298 000001DC 3B33                    		CMP		ESI,[EBX]
+   299 000001DE 7511                    		JNE		mts_fin
+   300 000001E0 8913                    		MOV		[EBX],EDX
+   301 000001E2 0500100000              		ADD		EAX,0x1000
+   302 000001E7 3B442414                		CMP		EAX,[ESP+12+8]
+   303 000001EB 76D9                    		JBE		mts_loop
+   304 000001ED 5B                      		POP		EBX
+   305 000001EE 5E                      		POP		ESI
+   306 000001EF 5F                      		POP		EDI
+   307 000001F0 C3                      		RET
+   308                                  
+   309                                  mts_fin
+   309          ******************       warning: label alone on a line without a colon might be in error [-w+label-orphan]
+   310 000001F1 8913                    		MOV		[EBX],EDX
+   311 000001F3 5B                      		POP		EBX
+   312 000001F4 5E                      		POP		ESI
+   313 000001F5 5F                      		POP		EDI
+   314 000001F6 C3                      		RET
+   315                                  
+   316                                  farjmp:
+   317 000001F7 FF6C2404                		JMP		FAR		[ESP+4]
+   318 000001FB C3                      		RET
+   319                                  
+   320                                  farcall:
+   321 000001FC FF5C2404                		CALL	FAR [ESP+4]
+   322 00000200 C3                      		RET
+   323                                  
+   324                                  asm_hrb_api:
+   325 00000201 1E                      		PUSH	DS
+   326 00000202 06                      		PUSH	ES
+   327 00000203 60                      		PUSHAD		; �ۑ��̂��߂�PUSH
+   328 00000204 B808000000              		MOV		EAX,1*8
+   329 00000209 8ED8                    		MOV		DS,AX			; �Ƃ肠����DS����OS�p�ɂ���
+   330 0000020B 8B0DE40F0000            		MOV		ECX,[0xfe4]		; OS��ESP
+   331 00000211 83C1D8                  		ADD		ECX,-40
+   332 00000214 896120                  		MOV		[ECX+32],ESP	; �A�v����ESP��ۑ�
+   333 00000217 8C5124                  		MOV		[ECX+36],SS		; �A�v����SS��ۑ�
+   334                                  
+   335                                  ; PUSHAD�����l��V�X�e���̃X�^�b�N�ɃR�s�[����
+   336 0000021A 8B1424                  		MOV		EDX,[ESP   ]
+   337 0000021D 8B5C2404                		MOV		EBX,[ESP+ 4]
+   338 00000221 8911                    		MOV		[ECX   ],EDX	; hrb_api�ɓn�����߃R�s�[
+   339 00000223 895904                  		MOV		[ECX+ 4],EBX	; hrb_api�ɓn�����߃R�s�[
+   340 00000226 8B542408                		MOV		EDX,[ESP+ 8]
+   341 0000022A 8B5C240C                		MOV		EBX,[ESP+12]
+   342 0000022E 895108                  		MOV		[ECX+ 8],EDX	; hrb_api�ɓn�����߃R�s�[
+   343 00000231 89590C                  		MOV		[ECX+12],EBX	; hrb_api�ɓn�����߃R�s�[
+   344 00000234 8B542410                		MOV		EDX,[ESP+16]
+   345 00000238 8B5C2414                		MOV		EBX,[ESP+20]
+   346 0000023C 895110                  		MOV		[ECX+16],EDX	; hrb_api�ɓn�����߃R�s�[
+   347 0000023F 895914                  		MOV		[ECX+20],EBX	; hrb_api�ɓn�����߃R�s�[
+   348 00000242 8B542418                		MOV		EDX,[ESP+24]
+   349 00000246 8B5C241C                		MOV		EBX,[ESP+28]
+   350 0000024A 895118                  		MOV		[ECX+24],EDX	; hrb_api�ɓn�����߃R�s�[
+   351 0000024D 89591C                  		MOV		[ECX+28],EBX	; hrb_api�ɓn�����߃R�s�[
+   352                                  
+   353 00000250 8EC0                    		MOV		ES,AX			; �c��̃Z�O�����g���W�X�^��OS�p�ɂ���
+   354 00000252 8ED0                    		MOV		SS,AX
+   355 00000254 89CC                    		MOV		ESP,ECX
+   356 00000256 FB                      		STI			; ����Ɗ��荞�݋���
+   357                                  
+   358 00000257 E8(00000000)            		CALL	hrb_api
+   359                                  
+   360 0000025C 8B4C2420                		MOV		ECX,[ESP+32]	; �A�v����ESP��v���o��
+   361 00000260 8B442424                		MOV		EAX,[ESP+36]	; �A�v����SS��v���o��
+   362 00000264 FA                      		CLI
+   363 00000265 8ED0                    		MOV		SS,AX
+   364 00000267 89CC                    		MOV		ESP,ECX
+   365 00000269 61                      		POPAD
+   366 0000026A 07                      		POP		ES
+   367 0000026B 1F                      		POP		DS
+   368 0000026C CF                      		IRETD		; ���̖��߂�������STI���Ă����
+   369                                  
+   370                                  start_app:
+   371 0000026D 60                      		PUSHAD
+   372 0000026E 8B442424                		MOV		EAX,[ESP+36]
+   373 00000272 8B4C2428                		MOV		ECX,[ESP+40]
+   374 00000276 8B54242C                		MOV		EDX,[ESP+44]
+   375 0000027A 8B5C2430                		MOV		EBX,[ESP+48]
+   376 0000027E 8925E40F0000            		MOV		[0xfe4],ESP
+   377 00000284 FA                      		CLI
+   378 00000285 8EC3                    		MOV		ES,BX
+   379 00000287 8ED3                    		MOV		SS,BX
+   380 00000289 8EDB                    		MOV		DS,BX
+   381 0000028B 8EE3                    		MOV		FS,BX
+   382 0000028D 8EEB                    		MOV		GS,BX
+   383 0000028F 89D4                    		MOV		ESP,EDX
+   384 00000291 FB                      		STI
+   385 00000292 51                      		PUSH	ECX
+   386 00000293 50                      		PUSH	EAX
+   387 00000294 FF1C24                  		CALL	FAR [ESP]
+   388                                  		;アプリが終了したら戻ってくる
+   389 00000297 B808000000              		MOV		EAX,1*8
+   390 0000029C FA                      		CLI
+   391 0000029D 8EC0                    		MOV		ES,AX
+   392 0000029F 8ED0                    		MOV		SS,AX
+   393 000002A1 8ED8                    		MOV		DS,AX
+   394 000002A3 8EE0                    		MOV		FS,AX
+   395 000002A5 8EE8                    		MOV		GS,AX
+   396 000002A7 8B25E40F0000            		MOV		ESP,[0xfe4]
+   397 000002AD FB                      		STI
+   398 000002AE 61                      		POPAD
+   399 000002AF C3                      		RET

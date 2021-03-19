@@ -1,0 +1,9 @@
+     1                                  GLOBAL	api_alloctimer
+     2                                  
+     3                                  [SECTION .text]
+     4                                  
+     5                                  api_alloctimer: ; int api_alloctimer (void);
+     6 00000000 BA10000000              	mov		edx, 16
+     7 00000005 CD40                    	int		0x40
+     8 00000007 C3                      	ret
+     9                                  

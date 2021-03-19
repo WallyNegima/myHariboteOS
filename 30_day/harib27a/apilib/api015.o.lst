@@ -1,0 +1,11 @@
+     1                                  GLOBAL  api_getkey
+     2                                  
+     3                                  [SECTION .text]
+     4                                  
+     5                                  api_getkey: ; int api_getkey (int mode);
+     6 00000000 BA0F000000                  mov		edx, 15
+     7 00000005 8B442404                	mov		eax, [esp + 4];  mode
+     8 00000009 CD40                    	int		0x40
+     9 0000000B C3                      	ret
+    10                                  
+    11                                  

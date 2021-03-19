@@ -1,0 +1,15 @@
+     1                                  [BITS 32]
+     2                                  
+     3                                  		GLOBAL	api_fseek
+     4                                  
+     5                                  [SECTION .text]
+     6                                  
+     7                                  api_fseek:			; void api_fseek(int fhandle, int offset, int mode);
+     8 00000000 53                      		PUSH	EBX
+     9 00000001 BA17000000              		MOV		EDX,23
+    10 00000006 8B442408                		MOV		EAX,[ESP+8]			; fhandle
+    11 0000000A 8B4C2410                		MOV		ECX,[ESP+16]		; mode
+    12 0000000E 8B5C240C                		MOV		EBX,[ESP+12]		; offset
+    13 00000012 CD40                    		INT		0x40
+    14 00000014 5B                      		POP		EBX
+    15 00000015 C3                      		RET

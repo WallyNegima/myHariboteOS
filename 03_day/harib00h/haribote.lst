@@ -1,0 +1,24 @@
+     1                                  CYLS		EQU		0x0ff0 ; boot sector
+     2                                  LEDS		EQU		0x0ff1 ;
+     3                                  VMODE		EQU		0x0ff2 ; 色に関する情報
+     4                                  SCRNX		EQU		0x0ff4 ; 解像度のX
+     5                                  SCRNY		EQU		0x0ff6 ; 解像度のY
+     6                                  VRAM		EQU		0x0ff8 ; グラフィックバッファの開始番地
+     7                                  
+     8                                  		ORG		0xc200
+     9 00000000 B013                    		MOV		AL,0x13
+    10 00000002 B400                    		MOV		AH,0x00
+    11 00000004 CD10                    		INT		0x10
+    12 00000006 C606F20F08              		MOV		BYTE [VMODE],8 ; 画面モードをメモ
+    13 0000000B C706F40F4001            		MOV		WORD [SCRNX],320
+    14 00000011 C706F60FC800            		MOV		WORD [SCRNY],200
+    15 00000017 66C706F80F00000A00      		MOV		DWORD [VRAM], 0x000a0000
+    16                                  
+    17                                  ; キーボードのLED状態をBIOSに教えてもらう
+    18 00000020 B402                    		MOV		AH,0x02
+    19 00000022 CD16                    		INT		0x16
+    20 00000024 A2F10F                  		MOV		[LEDS],AL
+    21                                  
+    22                                  fin:
+    23 00000027 F4                      		HLT
+    24 00000028 EBFD                    		JMP		fin

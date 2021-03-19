@@ -1,0 +1,14 @@
+     1                                  [BITS 32]
+     2                                  
+     3                                  		GLOBAL	api_cmdline
+     4                                  
+     5                                  [SECTION .text]
+     6                                  
+     7                                  api_cmdline:		; int api_cmdline(char *buf, int maxsize);
+     8 00000000 53                      		PUSH	EBX
+     9 00000001 BA1A000000              		MOV		EDX,26
+    10 00000006 8B4C240C                		MOV		ECX,[ESP+12]		; maxsize
+    11 0000000A 8B5C2408                		MOV		EBX,[ESP+8]			; buf
+    12 0000000E CD40                    		INT		0x40
+    13 00000010 5B                      		POP		EBX
+    14 00000011 C3                      		RET

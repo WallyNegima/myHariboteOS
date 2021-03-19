@@ -1,0 +1,16 @@
+     1                                  [BITS 32]; 32ビットモード用の機械語を作らせる宣言
+     2                                  
+     3                                  ;[FILE "naskfunc.nas"] ; ソールファイル名．nasmではエラーがでる
+     4                                  		GLOBAL		io_hlt,write_mem8
+     5                                  
+     6                                  [SECTION	.text]
+     7                                  
+     8                                  io_hlt: ; void io_hlt(void)
+     9 00000000 F4                      		HLT
+    10 00000001 C3                      		RET
+    11                                  
+    12                                  write_mem8: ; void write_mem8(int addr, int data);
+    13 00000002 8B4C2404                		MOV		ECX,[ESP+4] ; ESP+4にaddrが入っているのでそれをECXに読み込む
+    14 00000006 8A442408                		MOV		AL,[ESP+8] ; ESP+8にdataが入ってるので読み込む
+    15 0000000A 8801                    		MOV		[ECX],AL
+    16 0000000C C3                      		RET
